@@ -89,20 +89,26 @@ app.post('/api/scrape', async (req, res) => {
 // ✅ TEST IN BROWSER (GET)
 app.get('/api/scrape', async (req, res) => {
   try {
-    const query = req.query.query;   // "starbucks ahmedabad"
-    if (!query) return res.status(400).json({ error: "query required" });
+    const query = req.query.query;
 
-    // keyword & location split krde
-    const parts = query.split(" in ");
-    const keyword = parts[0];
-    const location = parts[1] || "";
+    // agar query nahi mile to error
+    if (!query) {
+      return res.status(400).json({ error: "Missing ?query=" });
+    }
+
+    // split keyword + location
+    const parts = query.split(" ");
+    const keyword = parts[0];             // Starbucks
+    const location = parts.slice(1).join(" ");  // Ahmedabad
 
     const rows = await handleScrape([keyword], location);
     res.json({ rows });
+
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
+
 
 
 // old route kept for compatibility
