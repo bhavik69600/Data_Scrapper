@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Places Scraper (SerpAPI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Places Scraper <span>SerpAPI + Emails</span></h1>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Search Settings</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Keywords (one per line)</label>
+          <textarea id="keywords" placeholder="e.g. 1.manufacturer 2.pharma company  3.textile company"></textarea>
+        </div>
+        <div class="field">
+          <label>Location (City or Area)</label>
+          <input id="location" type="text" placeholder="e.g. Ahmedabad">
+        </div>
+        <div class="field">
+          <label>Scrape Emails from Website</label>
+          <select id="scrape">
+            <option value="true" selected>Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
+      <button id="run" class="btn">Run Search</button>
+      <div id="progress" class="progress" hidden>
+        <div class="bar" id="bar"></div>
+        <span id="status">Starting…</span>
+      </div>
+    </section>
+
+    <section class="card results">
+      <div class="header-row">
+        <h2>Results</h2>
+        <button id="export" class="btn ghost" disabled>Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>Keyword</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th>Website</th>
+              <th>Emails</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Use responsibly. Respect API & site terms.</p>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

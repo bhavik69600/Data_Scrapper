@@ -1,0 +1,17 @@
+{
+  "name": "places-scraper-serpapi",
+  "version": "1.0.0",
+  "description": "Local business scraper using SerpAPI (Google Maps engine) + email finder",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
