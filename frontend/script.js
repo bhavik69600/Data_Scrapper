@@ -75,11 +75,12 @@ runBtn.addEventListener('click', async () => {
   setProgress(3, 'Contacting server…');
 
   try {
-    const resp = await fetch('/api/run', {
+    const resp = await fetch('/api/scrape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ keywords, location, scrape })
     });
+
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Request failed');
 
