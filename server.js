@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use('/', express.static(path.join(__dirname, 'frontend')));
 
+// Environment Variables
 const USE_SERPAPI = String(process.env.USE_SERPAPI || 'true').toLowerCase() === 'true';
 const SERPAPI_KEY = process.env.SERPAPI_KEY;
 const PORT = process.env.PORT || 5055;
@@ -17,10 +18,10 @@ const SCRAPE_EMAILS = String(process.env.SCRAPE_EMAILS || 'true').toLowerCase() 
 const REQUEST_DELAY_MS = Number(process.env.REQUEST_DELAY_MS || 200);
 
 if (!SERPAPI_KEY || SERPAPI_KEY.includes('YOUR_SERPAPI_KEY')) {
-  console.warn('⚠️ Set SERPAPI_KEY in .env before running.');
+  console.warn('⚠️ Set SERPAPI_KEY in Railway Variables.');
 }
 
-function delay(ms){ return new Promise(r => setTimeout(r, ms)); }
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function serpApiMapsSearch(query) {
   const url = `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(query)}&hl=en&api_key=${SERPAPI_KEY}`;
@@ -36,52 +37,76 @@ async function serpApiMapsSearch(query) {
   }));
 }
 
+// ✅ Same function, used by both POST /api/run and POST /api/scrape
+async function handleScrape(keywords, location) {
+  if (!Array.isArray(keywords) || !location) {
+    throw new Error("keywords (array) and location (string) are required.");
+  }
+
+  const cleanKeywords = keywords
+    .map(k => String(k || '').trim())
+    .filter(Boolean)
+    .slice(0, 60);
+
+  const final = [];
+  for (const kw of cleanKeywords) {
+    const query = `${kw} in ${location}`;
+    console.log('🔎 SerpAPI query:', query);
+    const results = await serpApiMapsSearch(query);
+
+    for (const r of results) {
+      let emails = [];
+      if (SCRAPE_EMAILS && r.website) {
+        emails = await fetchEmailsFromWebsite(r.website);
+        await delay(REQUEST_DELAY_MS);
+      }
+      final.push({
+        keyword: kw,
+        name: r.name,
+        address: r.address,
+        phone: r.phone,
+        website: r.website,
+        emails
+      });
+    }
+    await delay(REQUEST_DELAY_MS);
+  }
+
+  return final;
+}
+
+// ✅ FRONTEND CALLS THIS (POST)
+app.post('/api/scrape', async (req, res) => {
+  try {
+    const rows = await handleScrape(req.body.keywords, req.body.location);
+    res.json({ rows });
+  } catch (e) {
+    console.error('API /scrape ERROR:', e.message);
+    res.status(500).json({ error: e.message || 'Internal error' });
+  }
+});
+
+// ✅ TEST IN BROWSER (GET)
+app.get('/api/scrape', async (req, res) => {
+  try {
+    const query = req.query.query;
+    const rows = await handleScrape([query], "");
+    res.json({ rows });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// old route kept for compatibility
 app.post('/api/run', async (req, res) => {
   try {
-    const { keywords, location } = req.body || {};
-    if (!Array.isArray(keywords) || !location) {
-      return res.status(400).json({ error: 'keywords (array) and location (string) are required.' });
-    }
-    if (!USE_SERPAPI) {
-      return res.status(400).json({ error: 'This build is SerpAPI-only. Set USE_SERPAPI=true.' });
-    }
-
-    const cleanKeywords = keywords
-      .map(k => String(k||'').trim())
-      .filter(Boolean)
-      .slice(0, 60);
-
-    const final = [];
-    for (const kw of cleanKeywords) {
-      const query = `${kw} in ${location}`;
-      console.log('🔎 SerpAPI query:', query);
-      const results = await serpApiMapsSearch(query);
-
-      for (const r of results) {
-        let emails = [];
-        if (SCRAPE_EMAILS && r.website) {
-          emails = await fetchEmailsFromWebsite(r.website);
-          await delay(REQUEST_DELAY_MS);
-        }
-        final.push({
-          keyword: kw,
-          name: r.name,
-          address: r.address,
-          phone: r.phone,
-          website: r.website,
-          emails
-        });
-      }
-      await delay(REQUEST_DELAY_MS);
-    }
-
-    res.json({ rows: final });
+    const rows = await handleScrape(req.body.keywords, req.body.location);
+    res.json({ rows });
   } catch (e) {
-    console.error('API RUN ERROR:', e.response?.data || e.message || e);
-    res.status(500).json({ error: e.response?.data?.error || e.message || 'Internal error' });
+    res.status(500).json({ error: e.message });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ SerpAPI Places Scraper UI running on http://localhost:${PORT}`);
+  console.log(`✅ Backend live on http://localhost:${PORT}`);
 });
