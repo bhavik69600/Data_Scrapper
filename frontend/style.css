@@ -40,7 +40,7 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
 .highlight {
   color: #00bcd4; /* change to any color you like */
-  font-family: 'Poppins', sans-serif; /* or any font */
+  font-family: 'Pacifico', cursive; /* or any font */
   font-weight: bold;
   letter-spacing: 1px;
 }
