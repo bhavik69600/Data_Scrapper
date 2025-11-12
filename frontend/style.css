@@ -42,5 +42,6 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   color: #00bcd4; /* change to any color you like */
   font-family: 'Pacifico', cursive; /* or any font */
   font-weight: bold;
+  font-size: 40px;
   letter-spacing: 1px;
 }
