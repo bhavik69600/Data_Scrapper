@@ -41,7 +41,7 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 .highlight {
   color: #00bcd4;
   font-family: 'Pacifico', cursive;
-  font-size: 40px;
+  font-size: 55px; /* bigger and more eye-catching */
   letter-spacing: 1px;
-  text-shadow: 0 0 8px #00bcd4, 0 0 15px #00bcd4;
+  text-shadow: 0 0 8px #00bcd4, 0 0 15px #00bcd4; /* optional glow */
 }
