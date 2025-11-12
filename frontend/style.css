@@ -38,3 +38,9 @@ tbody td { padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); vertical
 tbody tr:hover { background: rgba(255,255,255,0.03); }
 .app-footer { text-align: center; color: var(--muted); padding: 20px; font-size: 13px; }
 @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+.highlight {
+  color: #00bcd4; /* change to any color you like */
+  font-family: 'Poppins', sans-serif; /* or any font */
+  font-weight: bold;
+  letter-spacing: 1px;
+}
