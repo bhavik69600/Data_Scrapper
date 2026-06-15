@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ override: true });
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -121,6 +121,10 @@ app.post('/api/run', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Backend live on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Backend live on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
